@@ -1,4 +1,5 @@
 import os
+
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -13,4 +14,3 @@ class Config:
     EMAIL_TO = os.getenv("EMAIL_TO")
     EMAIL_FROM = os.getenv("EMAIL_FROM")
     PORT = int(os.getenv("PORT", 5000))
-    

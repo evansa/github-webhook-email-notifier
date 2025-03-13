@@ -1,23 +1,25 @@
-from flask import Blueprint, request, jsonify, current_app
+import hashlib
+import hmac
+import logging
 import smtplib
 from email.mime.text import MIMEText
-import hmac
-import hashlib
-import logging
+
+from flask import Blueprint, current_app, jsonify, request
 
 webhook_bp = Blueprint("webhook", __name__)
 logging.basicConfig(level=logging.INFO)
+
 
 @webhook_bp.route("/webhook", methods=["POST"])
 def github_webhook():
     try:
         secret_token = current_app.config.get("SECRET_TOKEN")
         signature = request.headers.get("X-Hub-Signature-256")
-        
+
         if not secret_token:
             logging.error("Missing SECRET_TOKEN in configuration")
             return jsonify({"error": "Server misconfiguration"}), 500
-        
+
         if not verify_signature(secret_token, request.data, signature):
             logging.warning("Unauthorized webhook request received")
             return jsonify({"error": "Unauthorized"}), 403
@@ -33,6 +35,7 @@ def github_webhook():
         logging.error("Unexpected error: %s", str(e))
         return jsonify({"error": "Internal server error"}), 500
 
+
 def verify_signature(secret, payload, signature):
     try:
         if not signature:
@@ -42,6 +45,7 @@ def verify_signature(secret, payload, signature):
     except Exception as e:
         logging.error("Error verifying signature: %s", str(e))
         return False
+
 
 def send_email(subject, body):
     try:
@@ -54,9 +58,13 @@ def send_email(subject, body):
             logging.error("Email configuration is missing required fields")
             return
 
-        with smtplib.SMTP(current_app.config["SMTP_SERVER"], current_app.config["SMTP_PORT"]) as server:
+        with smtplib.SMTP(
+            current_app.config["SMTP_SERVER"], current_app.config["SMTP_PORT"]
+        ) as server:
             server.starttls()
-            server.login(current_app.config["SMTP_USERNAME"], current_app.config["SMTP_PASSWORD"])
+            server.login(
+                current_app.config["SMTP_USERNAME"], current_app.config["SMTP_PASSWORD"]
+            )
             server.sendmail(msg["From"], [msg["To"]], msg.as_string())
         logging.info("Email sent successfully")
     except smtplib.SMTPException as e:
