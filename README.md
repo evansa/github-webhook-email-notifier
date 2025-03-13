@@ -14,8 +14,8 @@ This project is a Flask application that receives GitHub webhook events and send
 ### 1. Clone this repository
 
 ```bash
-git clone https://github.com/evansa/github-webhook-notifier.git
-cd github-webhook-notifier
+git clone https://github.com/evansa/github-webhook-email-notifier.git
+cd github-webhook-email-notifier
 ```
 
 ### 2. Configure environment variables
