@@ -36,7 +36,7 @@ def github_webhook():
         return jsonify({"error": "Internal server error"}), 500
 
 
-def verify_signature(secret, payload, signature):
+def verify_signature(secret, payload, signature) -> bool:
     try:
         if not signature:
             return False
@@ -47,7 +47,7 @@ def verify_signature(secret, payload, signature):
         return False
 
 
-def send_email(subject, body):
+def send_email(subject, body) -> None:
     try:
         msg = MIMEText(body)
         msg["Subject"] = subject
