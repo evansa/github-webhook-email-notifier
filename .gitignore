@@ -13,3 +13,5 @@ env/
 *.log
 *.DS_Store
 note.txt
+get-pip.py
+*.coverage
